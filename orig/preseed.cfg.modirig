@@ -21,7 +21,6 @@ d-i passwd/user-default-groups string audio cdrom video sudo
 d-i clock-setup/utc boolean true
 d-i time/zone string US/Pacific
 d-i clock-setup/ntp boolean true
-d-i partman-auto/choose_recipe select atomic
 
 ### Partitioning
 d-i partman-auto/method string lvm
@@ -29,6 +28,23 @@ d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-md/device_remove_md boolean true
 d-i partman-lvm/confirm boolean true
 d-i partman-lvm/confirm_nooverwrite boolean true
+
+d-i partman-auto/expert_recipe string                         \
+      boot-root ::                                            \
+              40 50 100 ext4                                  \
+                      $primary{ } $bootable{ }                \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ /boot }                     \
+              .                                               \
+              500 10000 1000000000 ext4                       \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext4 }    \
+                      mountpoint{ / }                         \
+              .                                               \
+              64 512 300% linux-swap                          \
+                      method{ swap } format{ }                \
+              .
 
 d-i partman-partitioning/confirm_write_new_label boolean true
 d-i partman/choose_partition select finish
@@ -56,7 +72,7 @@ popularity-contest popularity-contest/participate boolean false
 # Grub
 d-i grub-installer/only_debian boolean true
 d-i grub-installer/with_other_os boolean true
-d-i grub-installer/bootdev string default
+#d-i grub-installer/bootdev string /dev/sda
 
 # reboot
 d-i finish-install/reboot_in_progress note
